@@ -1,0 +1,18 @@
+#!/bin/sh
+if ! ping -q -c 3 -W 30 SOME_GATEWAY > /dev/null; then
+   echo ping 1 err
+   logger ping 1 err
+   if ! ping -q -c 2 -W 30 SOME_GATEWAY > /dev/null; then
+       (ifup -a; sleep 20;/etc/init.d/firewall restart)&
+       echo wan err: ifup all
+       logger wan err: ifup all
+   else
+       (/etc/init.d/firewall restart)&
+       echo firewall restart
+       logger firewall restart
+   fi
+else
+   echo wan OK
+   logger wan OK
+fi
+exit 0
